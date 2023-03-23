@@ -1,7 +1,7 @@
 import csv
 archivo2 = 'watched.csv'
-archivo = 'limpieza-netflix.csv'
-f = open(archivo2, 'r')
+archivo = 'pelas-vol-5.csv'
+f = open(archivo, 'r')
 reader = csv.reader(f)
 content = []
 
