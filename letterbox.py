@@ -7,14 +7,26 @@ def get_html_text(url):
     return soup
 
 def get_stars(url):
-    soup = get_html_text(url)
-    listahtml = soup.find("div", attrs={"class": "cast-list text-sluglist"}).find_all("a",
-                                                                                      {"class": "text-slug tooltip"})
-    star = []
-    for x in listahtml:
-        nombre_actor = x.text
-        star.append(str(nombre_actor))
-    return star
+    try:
+        soup = get_html_text(url)
+
+        cast_list = soup.find("div", attrs={"class": "cast-list text-sluglist"})
+        if cast_list:
+            listahtml = cast_list.find_all("a", {"class": "text-slug tooltip"})
+        else:
+            listahtml = None
+
+        star = []
+        if listahtml:
+            for x in listahtml:
+                nombre_actor = x.text
+                star.append(str(nombre_actor))
+            return star
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
+        print(e)
+        return None
 
 def get_director(url):
     soup = get_html_text(url)
@@ -29,19 +41,25 @@ def get_director(url):
 
 
 def get_writers(url):
-    soup = get_html_text(url)
-    project_href = [i['href'] for i in soup.find_all('a', href=True)]
-    director = []
-    for x in project_href:
-        if "/writer/" in x:
-            director_name = x.split("/writer/")[1].replace("-", " ").title()
-            director.append(str(director_name.strip('/')))
-        if "/writers/" in x:
-            director_name = x.split("/writers/")[1].replace("-", " ").title()
-            director.append(str(director_name.strip('/')))
+    try:
+        soup = get_html_text(url)
+        project_href = [i['href'] for i in soup.find_all('a', href=True)]
+        director = []
+        if project_href:
+            for x in project_href:
+                if "/writer/" in x:
+                    director_name = x.split("/writer/")[1].replace("-", " ").title()
+                    director.append(str(director_name.strip('/')))
+                if "/writers/" in x:
+                    director_name = x.split("/writers/")[1].replace("-", " ").title()
+                    director.append(str(director_name.strip('/')))
 
-    return list(set(element for element in director))
-
+            return list(set(element for element in director))
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
+        print(e)
+        return None
 
 def get_name(url):
     soup = get_html_text(url)
@@ -57,9 +75,9 @@ def get_year(url):
     return year
 
 movies = []
-lista_python = ["https://letterboxd.com/film/meet-cute-2022/"]
+lista = ["https://letterboxd.com/film/the-glass-castle-2017/"]
 
-for i, url in enumerate(lista_python):
+for i, url in enumerate(lista):
     movies.append(
         {"name": get_name(url), "year": get_year(url),
          "directors": get_director(url),
