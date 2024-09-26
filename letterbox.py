@@ -86,7 +86,11 @@ def get_year(url):
 
 
 lista = [
-    'https://letterboxd.com/film/25th-hour/',
+    'https://letterboxd.com/film/the-number-23/',
+    'https://letterboxd.com/film/the-green-knight/',
+    'https://letterboxd.com/film/im-your-man-2021/',
+    'https://letterboxd.com/film/youve-got-mail/',
+
 ]
 
 movies = []

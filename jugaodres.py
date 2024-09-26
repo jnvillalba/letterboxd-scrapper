@@ -4,12 +4,14 @@ import pandas as pd
 import re
 from tabulate import tabulate
 
+
 def encontrar_titulos_con_runs(archivo):
     titulos_con_runs = []
     with open(archivo, 'r') as f:
         contenido = f.read()
         matches = re.findall(r'<a[^>]+?title="([^"]+?)"', contenido)
-        titulos_con_runs = [match.replace("\\u0026", "&").replace("▶️", "").replace("⚽️", "") for match in matches if match not in palabras_a_eliminar]
+        titulos_con_runs = [match.replace("\\u0026", "&").replace("▶️", "").replace("⚽️", "") for match in matches if
+                            match not in palabras_a_eliminar]
     palabras_clave = ['Inicio', 'Shorts', 'Suscripciones', 'Tú']
     indices = [titulos_con_runs[::-1].index(palabra) for palabra in palabras_clave]
     indice_maximo = len(titulos_con_runs) - max(indices) - 1
@@ -22,11 +24,13 @@ def encontrar_titulos_con_runs(archivo):
 
     return titulos_con_runs
 
+
 class Jugador:
     def __init__(self, nombre, paises, posicion):
         self.nombre = nombre
         self.paises = paises
         self.posicion = posicion
+
 
 def convertir_a_objetos(lista, simbolos_paises):
     jugadores = []
@@ -53,19 +57,29 @@ def convertir_a_objetos(lista, simbolos_paises):
 
 
 # Símbolos de países de Europa
-simbolos_paises_europa = ['🇦🇱', '🇦🇩', '🇦🇹', '🇧🇾', '🇧🇪', '🇧🇦', '🇧🇬', '🇭🇷', '🇨🇾', '🇨🇿', '🇩🇰', '🇪🇪', '🇫🇮', '🇫🇷', '🇩🇪', '🇬🇷', '🇭🇺', '🇮🇸', '🇮🇪', '🇮🇹', '🇽🇰', '🇱🇻', '🇱🇮', '🇱🇹', '🇱🇺', '🇲🇰', '🇲🇹', '🇲🇩', '🇲🇪', '🇳🇱', '🇳🇴', '🇵🇱', '🇵🇹', '🇷🇴', '🇷🇸', '🇸🇰', '🇸🇮', '🇪🇸', '🇸🇪', '🇨🇭', '🇺🇦', '🇬🇧']
+simbolos_paises_europa = ['🇦🇱', '🇦🇩', '🇦🇹', '🇧🇾', '🇧🇪', '🇧🇦', '🇧🇬', '🇭🇷', '🇨🇾', '🇨🇿', '🇩🇰', '🇪🇪', '🇫🇮', '🇫🇷', '🇩🇪',
+                          '🇬🇷', '🇭🇺', '🇮🇸', '🇮🇪', '🇮🇹', '🇽🇰', '🇱🇻', '🇱🇮', '🇱🇹', '🇱🇺', '🇲🇰', '🇲🇹', '🇲🇩', '🇲🇪', '🇳🇱',
+                          '🇳🇴', '🇵🇱', '🇵🇹', '🇷🇴', '🇷🇸', '🇸🇰', '🇸🇮', '🇪🇸', '🇸🇪', '🇨🇭', '🇺🇦', '🇬🇧']
 
 # Símbolos de países de América
-simbolos_paises_america = ['🇦🇬', '🇦🇷', '🇧🇸', '🇧🇧', '🇧🇿', '🇧🇴', '🇧🇷', '🇨🇦', '🇨🇱', '🇨🇴', '🇨🇷', '🇨🇺', '🇩🇲', '🇩🇴', '🇪🇨', '🇸🇻', '🇬🇶', '🇬🇹', '🇬🇾', '🇭🇹', '🇭🇳', '🇯🇲', '🇲🇽', '🇳🇮', '🇵🇦', '🇵🇾', '🇵🇪', '🇵🇷', '🇰🇳', '🇱🇨', '🇻🇨', '🇸🇷', '🇹🇹', '🇺🇸', '🇺🇾', '🇻🇪']
+simbolos_paises_america = ['🇦🇬', '🇦🇷', '🇧🇸', '🇧🇧', '🇧🇿', '🇧🇴', '🇧🇷', '🇨🇦', '🇨🇱', '🇨🇴', '🇨🇷', '🇨🇺', '🇩🇲', '🇩🇴', '🇪🇨',
+                           '🇸🇻', '🇬🇶', '🇬🇹', '🇬🇾', '🇭🇹', '🇭🇳', '🇯🇲', '🇲🇽', '🇳🇮', '🇵🇦', '🇵🇾', '🇵🇪', '🇵🇷', '🇰🇳', '🇱🇨',
+                           '🇻🇨', '🇸🇷', '🇹🇹', '🇺🇸', '🇺🇾', '🇻🇪']
 
-simbolos_paises_africa = ['🇲🇱''🇩🇿', '🇦🇴', '🇧🇯', '🇧🇼', '🇧🇫', '🇧🇮', '🇨🇲', '🇨🇻', '🇨🇫', '🇹🇩', '🇨🇬', '🇨🇮', '🇩🇯', '🇪🇬', '🇬🇶', '🇪🇷', '🇪🇹', '🇬🇦', '🇬🇲', '🇬🇭', '🇬🇳', '🇬🇼', '🇰🇪', '🇱🇸', '🇱🇷', '🇱🇾', '🇲🇬', '🇲🇼', '🇲🇱', '🇲🇷', '🇲🇺', '🇲🇿', '🇳🇦', '🇳🇪', '🇳🇬', '🇷🇼', '🇸🇭', '🇸🇱', '🇸🇴', '🇿🇦', '🇸🇸', '🇱🇰', '🇸🇩', '🇸🇿', '🇹🇿', '🇹🇬', '🇹🇳', '🇺🇬', '🇿🇲', '🇿🇼']
-
+simbolos_paises_africa = ['🇲🇱', '🇩🇿', '🇦🇴', '🇧🇯', '🇧🇼', '🇧🇫', '🇧🇮', '🇨🇲', '🇨🇻', '🇨🇫', '🇹🇩', '🇨🇬', '🇨🇮', '🇩🇯', '🇪🇬',
+                          '🇬🇶', '🇪🇷', '🇪🇹', '🇬🇦', '🇬🇲', '🇬🇭', '🇬🇳', '🇬🇼', '🇰🇪', '🇱🇸', '🇱🇷', '🇱🇾', '🇲🇬', '🇲🇼', '🇲🇱',
+                          '🇲🇷', '🇲🇺', '🇲🇿', '🇳🇦', '🇳🇪', '🇳🇬', '🇷🇼', '🇸🇭', '🇸🇱', '🇸🇴', '🇿🇦', '🇸🇸', '🇱🇰', '🇸🇩', '🇸🇿',
+                          '🇹🇿', '🇹🇬', '🇹🇳', '🇺🇬', '🇿🇲', '🇿🇼']
 
 # Combinamos todas las listas de símbolos de países
-simbolos_sum = simbolos_paises_europa + simbolos_paises_america +simbolos_paises_africa
+simbolos_sum = simbolos_paises_europa + simbolos_paises_america + simbolos_paises_africa
 
+palabras_a_eliminar = ['Enlace de vídeo compartido', 'Siguiente&nbsp;(SHIFT+n)', 'Denunciar esta lista',
+                       'Configuración de la lista de reproducción', 'Eliminar lista de reproducción', 'Descripción',
+                       'Subir vídeo', 'Emitir en directo', 'Combinaciones de teclas', 'Reproducción', 'General',
+                       'Subtítulos', 'Vídeos esféricos', 'Configuración de la lista de reproducción',
+                       'Eliminar lista de reproducción']
 
-palabras_a_eliminar = ['Enlace de vídeo compartido', 'Siguiente&nbsp;(SHIFT+n)','Denunciar esta lista','Configuración de la lista de reproducción', 'Eliminar lista de reproducción', 'Descripción', 'Subir vídeo', 'Emitir en directo', 'Combinaciones de teclas', 'Reproducción', 'General', 'Subtítulos', 'Vídeos esféricos', 'Configuración de la lista de reproducción', 'Eliminar lista de reproducción']
 
 def generar_excel(archivo):
     # Encontrar los títulos con las corridas
@@ -89,10 +103,12 @@ def generar_excel(archivo):
         df.to_excel(ruta_guardado, index=False)
         print(f'Se ha guardado el archivo Excel como "{ruta_guardado}"')
 
+
 def seleccionar_archivo():
     ruta_archivo = filedialog.askopenfilename(filetypes=[("Archivos de texto", "*.txt")])
     if ruta_archivo:
         generar_excel(ruta_archivo)
+
 
 # Configurar la ventana principal
 root = tk.Tk()
