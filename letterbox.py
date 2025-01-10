@@ -1,105 +1,123 @@
+import json
+from typing import List, Dict, Optional
+
 import requests
 from bs4 import BeautifulSoup
 
 
-def get_html_text(url):
-    html_text = requests.get(url).text
-    soup = BeautifulSoup(html_text, "html.parser")
-    return soup
+class MovieScraper:
+    """Class to handle movie data scraping from Letterboxd."""
 
+    def __init__(self, timeout: int = 10):
+        self.session = requests.Session()
+        self.session.timeout = timeout
 
-def get_stars(url):
-    try:
-        soup = get_html_text(url)
-
-        cast_list = soup.find("div", attrs={"class": "cast-list text-sluglist"})
-        if cast_list:
-            listahtml = cast_list.find_all("a", {"class": "text-slug tooltip"})
-        else:
-            listahtml = None
-
-        star = []
-        if listahtml:
-            for x in listahtml:
-                nombre_actor = x.text
-                star.append(str(nombre_actor))
-            return star
-        else:
+    def get_html_text(self, url: str) -> Optional[BeautifulSoup]:
+        try:
+            response = self.session.get(url)
+            response.raise_for_status()
+            return BeautifulSoup(response.text, "html.parser")
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching {url}: {str(e)}")
             return None
-    except requests.exceptions.RequestException as e:
-        print(e)
-        return None
 
+    def get_stars(self, soup: BeautifulSoup) -> List[str]:
+        if not soup:
+            return []
 
-def get_director(url):
-    soup = get_html_text(url)
-    project_href = [i['href'] for i in soup.find_all('a', href=True)]
-    director = []
-    for x in project_href:
-        if "/director/" in x:
-            director_name = x.split("/director/")[1].replace("-", " ").title()
-            director.append(str(director_name.strip('/')))
+        cast_list = soup.find("div", class_="cast-list text-sluglist")
+        if not cast_list:
+            return []
 
-    return list(set(element for element in director))
+        actors = cast_list.find_all("a", class_="text-slug tooltip")
+        return [actor.text.strip() for actor in actors]
 
+    def get_crew(self, soup: BeautifulSoup, role: str) -> List[str]:
+        if not soup:
+            return []
 
-def get_writers(url):
-    try:
-        soup = get_html_text(url)
         project_href = [i['href'] for i in soup.find_all('a', href=True)]
-        director = []
-        if project_href:
-            for x in project_href:
-                if "/writer/" in x:
-                    director_name = x.split("/writer/")[1].replace("-", " ").title()
-                    director.append(str(director_name.strip('/')))
-                if "/writers/" in x:
-                    director_name = x.split("/writers/")[1].replace("-", " ").title()
-                    director.append(str(director_name.strip('/')))
+        crew_members = set()
 
-            return list(set(element for element in director))
-        else:
+        for href in project_href:
+            if f"/{role}/" in href or f"/{role}s/" in href:
+                name = href.split(f"/{role}/")[-1].split(f"/{role}s/")[-1]
+                name = name.replace("-", " ").title().strip('/')
+                crew_members.add(name)
+
+        return list(crew_members)
+
+    def get_name(self, soup: BeautifulSoup) -> Optional[str]:
+        if not soup:
             return None
-    except requests.exceptions.RequestException as e:
-        print(e)
-        return None
+
+        title_elem = soup.find("h1", class_="headline-1 filmtitle")
+        return title_elem.text.strip() if title_elem else None
+
+    def get_year(self, soup: BeautifulSoup) -> Optional[str]:
+        if not soup:
+            return ""
+
+        year_div = soup.find('div', class_='releaseyear')
+        if not year_div:
+            return ""
+
+        year_link = year_div.find('a')
+        return year_link.text.strip() if year_link else ""
+
+    def scrape_movie(self, url: str) -> Optional[Dict]:
+        """
+        Scrape movie information and return it as a dictionary.
+
+        Args:
+            url: Letterboxd movie URL
+
+        Returns:
+            Dictionary with movie information or None if scraping fails
+        """
+        soup = self.get_html_text(url)
+        if not soup:
+            return None
+
+        return {
+            "name": self.get_name(soup),
+            "year": self.get_year(soup),
+            "directors": self.get_crew(soup, "director"),
+            "writers": self.get_crew(soup, "writer"),
+            "actors": self.get_stars(soup)
+        }
+
+    def scrape_movies(self, urls: List[str]) -> List[Dict]:
+        """
+        Scrape multiple movies and return them as a list of dictionaries.
+
+        Args:
+            urls: List of Letterboxd movie URLs
+
+        Returns:
+            List of dictionaries with movie information
+        """
+        movies = []
+        for url in urls:
+            movie = self.scrape_movie(url)
+            if movie:
+                movies.append(movie)
+        return movies
 
 
-def get_name(url):
-    soup = get_html_text(url)
-    listahtml = soup.find("h1", attrs={"class": "headline-1 filmtitle"})
-    if listahtml:
-        name = listahtml.text
-        return name
-    else:
-        return None
+def main():
+    urls = [
+        'https://letterboxd.com/film/the-last-suit/',
+        'https://letterboxd.com/film/flow-2024/',
+        'https://letterboxd.com/film/nosferatu-2024/',
+    ]
+
+    scraper = MovieScraper()
+    movies = scraper.scrape_movies(urls)
+
+    # Imprimir resultados como JSON formateado
+    print(json.dumps(movies, indent=2, ensure_ascii=False))
 
 
-def get_year(url):
-    soup = get_html_text(url)
-    small_element = soup.find('div', class_='releaseyear')
-    if small_element:
-        year = small_element.find('a').text
-        return year
-    else:
-        return None
-
-
-lista = [
-    'https://letterboxd.com/film/the-number-23/',
-    'https://letterboxd.com/film/the-green-knight/',
-    'https://letterboxd.com/film/im-your-man-2021/',
-    'https://letterboxd.com/film/youve-got-mail/',
-
-]
-
-movies = []
-
-for i, url in enumerate(lista):
-    movies.append(
-        {"name": get_name(url), "year": get_year(url),
-         "directors": get_director(url),
-         "writers": get_writers(url), "actors": get_stars(url)})
-
-for movie in movies:
-    print(movie)
+if __name__ == "__main__":
+    main()
