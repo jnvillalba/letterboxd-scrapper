@@ -107,9 +107,10 @@ class MovieScraper:
 
 def main():
     urls = [
-        'https://letterboxd.com/film/the-last-suit/',
-        'https://letterboxd.com/film/flow-2024/',
-        'https://letterboxd.com/film/nosferatu-2024/',
+        'https://letterboxd.com/film/rye-lane/',
+        'https://letterboxd.com/film/companion-2025/',
+        'https://letterboxd.com/film/the-player/',
+        'https://letterboxd.com/film/the-gorge-2025/',
     ]
 
     scraper = MovieScraper()
