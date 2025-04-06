@@ -51,14 +51,14 @@ class MovieScraper:
         if not soup:
             return None
 
-        title_elem = soup.find("h1", class_="headline-1 filmtitle")
+        title_elem = soup.find("h1", class_="headline-1 primaryname")
         return title_elem.text.strip() if title_elem else None
 
     def get_year(self, soup: BeautifulSoup) -> Optional[str]:
         if not soup:
             return ""
 
-        year_div = soup.find('div', class_='releaseyear')
+        year_div = soup.find('div', class_='metablock')
         if not year_div:
             return ""
 
@@ -107,10 +107,9 @@ class MovieScraper:
 
 def main():
     urls = [
-        'https://letterboxd.com/film/rye-lane/',
-        'https://letterboxd.com/film/companion-2025/',
-        'https://letterboxd.com/film/the-player/',
-        'https://letterboxd.com/film/the-gorge-2025/',
+        'https://letterboxd.com/film/cohen-vs-rosi/',
+        'https://letterboxd.com/film/cherry-2021/',
+        'https://letterboxd.com/film/resolution/',
     ]
 
     scraper = MovieScraper()
